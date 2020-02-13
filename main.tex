@@ -1,0 +1,55 @@
+\documentclass[10pt]{report}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc} 
+\usepackage{commath}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{tikz-timing}
+\usepackage{tikz}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{xstring}
+\usepackage{circuitikz}
+\usepackage{listings}
+\usepackage{todonotes}
+\usepackage[final]{pdfpages}
+\usepackage{listings}
+\usepackage{subcaption}
+\usepackage{circuitikz}
+\usepackage{varwidth}
+
+\usetikzlibrary{calc,shapes.multipart,chains,arrows}
+
+\tikzset{
+    max width/.style args={#1}{
+        execute at begin node={\begin{varwidth}{#1}},
+        execute at end node={\end{varwidth}}
+    }
+}
+
+\setlength\parindent{0pt}
+
+\title{Pattern Recognition}
+\author{Paul Nykiel}
+
+\begin{document}
+    \maketitle
+    \pagebreak
+    This page is intentionally left blank.
+    \pagebreak
+    \tableofcontents
+    \pagebreak
+    \input{bayes.tex}
+    \input{linearClass.tex}
+    \input{nonLinearClass.tex}
+    \input{featureSelection.tex}
+    \input{featureGen.tex}
+    \input{timeSeries.tex}
+    \input{eval.tex}
+\end{document}
