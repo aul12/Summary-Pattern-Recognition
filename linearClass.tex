@@ -71,3 +71,57 @@ To guarantee a maximum distance from both support vectors there should be a $x_i
 \begin{equation*}
     w^\text{T} x_i + w_0 = 1 \text{ and } w^\text{T} x_j + w_0 = -1
 \end{equation*}
+It follows, that:
+\begin{equation*}
+    w^\text{T} (x_i - x_j) = 2
+\end{equation*}
+
+The size of the margin is given by:
+\begin{equation*}
+    D(w) = \frac{w^\text{T} (x_i - x_j)}{\norm{w}_2} = \frac{2}{\norm{w}_2}
+\end{equation*}
+
+The numinator is constant, thus it is suffient to minimize the quadratic norm $\norm{w}_2^2$,
+considering one constraint per data point (minimum margin and correct classification):
+\begin{equation*}
+    T_i (w^\text{T} x_i + w_0) \geq 1\ \forall i \in \{1, \ldots, N\}
+\end{equation*}
+This optimization can be solved using Langrange Optimization with the Karush-Kuhn-Tucker conditions.
+
+\subsection{Soft separation}
+If the data set is not linearly separable so-called slack variables need to be added to the constraints:
+\begin{equation*}
+    T_i (w^\text{T} x_i + w_0) \geq 1 - \delta_i\ \forall i \in \{1, \ldots, N\}
+\end{equation*}
+
+The optimization needs to consider the $\delta$s as well.
+
+\section{Least Squares Methods}
+We define a linear classifier
+\begin{equation*}
+    g(x) = w^\text{T} x + w_0
+\end{equation*}
+and a corresponding error function for classification:
+\begin{equation*}
+    E(w) = \sum_{i=1}^N {(T_i - g(x_i))}^2
+\end{equation*}
+If the data is ordered in a matrix (columns are variable, rows are observations) and the targets are encoded as vectors the problem can be formulated in matrix vector notation:
+\begin{equation*}
+    E(w) = \norm{T - X w }_2^2
+\end{equation*}
+
+The minimum is obviously achieved if $T = Xw$. This is the case if $X^{-1}$ exists, this can only be the case for $N=d$, so for most cases a minimium must be found differently.
+
+\subsection{Minimization}
+For a minimum of $E(w)$ it is necessary, that $\frac{\partial E(w)}{\partial w_k} = 0\ \forall k \in \{0, \ldots, d\}$:
+\begin{equation*}
+    \frac{\partial E(w)}{\partial w_k} = -2 \sum_{i=1}^N (T_i - w^\text{T} x_i) x_{ik} = 0
+\end{equation*}
+It follows:
+\begin{equation*}
+    \sum_{i=1}^N x_{ik} w^\text{T} x_i = \sum_{i=1}^N x_{ik} T_i 
+\end{equation*}
+In matrix vector notation:
+\begin{equation*}
+    X^\text{T} X w = X^\text{T} T
+\end{equation*}
