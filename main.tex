@@ -26,6 +26,13 @@
 
 \usetikzlibrary{calc,shapes.multipart,chains,arrows}
 
+\newcommand{\Prb}[1]{P(\text{#1})}
+\newcommand{\CPr}[2]{P(\text{#1}|\text{#2})}
+\DeclareMathOperator*{\dx}{\text{ d}x}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+
 \tikzset{
     max width/.style args={#1}{
         execute at begin node={\begin{varwidth}{#1}},

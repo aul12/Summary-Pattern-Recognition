@@ -1,1 +1,158 @@
 \chapter{Bayes Decision Theory}
+\section{Bayes Classifier}
+Idea: classsification using conditional probabilitites:
+\begin{equation*}
+    \omega^* = \argmax_i P(\omega_i | x)
+\end{equation*}
+Problem: Posterior probabilitites are difficult to determine. Solution: Use a-priori probabilities and likelihood functions (Bayes):
+\begin{equation*}
+    P(\omega_i | x) = \frac{p(x | \omega_i) P(\omega_i)}{p(x)}
+\end{equation*}
+As $p(x)$ is constant for a given $x$ it is sufficient to consider the numinator for the $\argmax$ classification. 
+
+If there is a $x$ with $P(\omega_n | x) > 0 \land P(\omega_m | x) > 0$ there is an decision error which can not be avoided. But the Bayes Decision Rule is optimial, in this case this means the error probability is minimal. Proof: consider the error probability and calculate the minimun, this yields the Bayes Rule.
+
+\section{Misclassification Costs}
+In many applications it is important to avoid misclassifications of a certain type. 
+For this a term for misclassification is added. $\lambda_{ij}$ is the cost for assigning a pattern of class $i$ to class $j$. 
+Typically it holds that $\lambda_{ij} \geq 0\ \forall i,j$; $\lambda_{ii} = 0\ \forall i$.
+
+The risk for class $i$ is calculated as:
+\begin{equation*}
+    r_i = \sum_j \lambda_{ij} \int_{R_j} p(x | \omega_i) \dx
+\end{equation*}
+With $R_j$ being the area that is classified as $j$.
+
+The weighted average risk is then given by:
+\begin{equation*}
+    r = \sum_i P(\omega_i) r_i
+\end{equation*}
+Goal: choose $R_j; j \in \{1, \ldots, n\}$ so that $r$ is minimal. For $\lambda_{ii} = 0\ \forall i$ and $\lambda_{ij} = 1\ \forall i \neq j$ this is equivalent to the Bayes Decision Rule.
+
+\section{Likelihood Ratio}
+Minimizing $r$ is equivalent (in a two class problem) to selecting regions $R_1, R_2$ so that $x \in R_1 \Leftrightarrow l_1 < l_2$ and $x \in R_2 \Leftrightarrow l_2 < l_1$ with:
+\begin{eqnarray*}
+    l_1 &=& \lambda_{11} p(x | \omega_1) P(\omega_1) + \lambda_{21} p(x | \omega_2) P(\omega_2) \\
+    l_2 &=& \lambda_{12} p(x | \omega_1) P(\omega_1) + \lambda_{22} p(x | \omega_2) P(\omega_2)
+\end{eqnarray*}
+It follows that a pattern $x$ should be assigned to $\omega_1$ if
+\begin{equation*}
+    l_{12} = \frac{p(x | \omega_1)}{p(x | \omega_2)} > \frac{P(\omega_2)}{P(\omega_1)} \cdot \frac{\lambda_{21} - \lambda_{22}}{\lambda_{12} - \lambda_{11}}
+\end{equation*}
+
+\section{Scaling of Data}
+In the end all features are represented by one or more real numbers.
+Depending on their semantic meaning these values belong to different scales.
+
+\subsection{Nominal Scale}
+Feature values of nominal scale are just codes, mathematical operations are senseless. Example: labels for classification (numerical value for class is arbitrary).
+
+\subsection{Ordinal Scale}
+Feature values are ordered but actual numerical values do not have a meaning. Mathematical operations are senseless. Examples: Grade of food, wind force (Beaufort), difficulty of ski runs (actual values are arbitrary only the ordering is important). 
+
+\subsection{Interval Scale}
+Difference of feature values can be interpreted and compared absolute size of feature values can not be interpreted. Example: Temperature (offset and scaling is arbitrary).
+
+\subsection{Ratio Scale}
+A ratio scale is an interval scale with a natural origin. Only the scaling parameter is arbitrary. Examples: Physical units such as distance, time, weight; but also values such as income and financial assets.
+
+\section{PDF estimation}
+Challenge: estimate the likelihood PDF $p(x | \omega_i)$ from a given Dataset.
+
+\subsection{Naive Bayes Classifier}
+Assumption: all features $x_i, \ldots x_d$ are statistically independent, thus:
+\begin{equation*}
+    p(x | \omega_i) = \prod_{j=1}^d p(x_j | \omega_i)
+\end{equation*}
+
+\subsection{Decision Surfaces}
+By minimizing the error probability (or risk) the feature space is splitted into $M$ regions $R_1, \ldots R_M$. These regions are separated by decision surfaces. The surface $S_{ij}$ between $\omega_i$ and $\omega_j$ is given by:
+\begin{equation*}
+    S_{ij} = \{x \in \mathbb{R}^d | P(\omega_i | x) = P(\omega_j | x)\}
+\end{equation*}
+
+\subsection{Discriminant Functions}
+Instead of working with probabilitites $P(w_i | x)$ it is often more convenient to work with an equivalent function:
+\begin{equation*}
+    g_i(x) = f(P(\omega_i | x))
+\end{equation*}
+With $f$ being a strict \todo[inline]{ohne strict geht auch jede konstante Funktion?!} monotonically increasing function.
+
+In many cases $P(\omega_i | x)$ is not known or not easy to compute. In this cases $g_i(x)$ is only estimated, the classifier is then obviously not optimal with respect to Bayes decision rule.
+
+\subsection{Gaussian Density Functions}
+A (multivariate) Gaussian density function $p: \mathbb{R}^d \to \mathbb{R}$ is given by:
+\begin{equation*}
+    p(x|\omega_i) = \frac{1}{{(2 \pi)}^{d/2} \abs{\Sigma_i}^{1/2}} \exp \left(-\frac{1}{2} {(x - \mu_i)}^\text{T} \Sigma^{-1}_i {(x - \mu_i)} \right)
+\end{equation*}
+With mean vector $\mu_i = E[x] \in \mathbb{R}^d$ and covariance matrix $\Sigma_i = E[(x - \mu_i){(x - \mu_i)}^\text{T}] \in \mathbb{R}^{d \times d}$. Both can be computed from the datapoints of class $\omega_i$ ($\abs{A}$ denotes the determinant of $A$).
+
+\subsubsection{Discriminant Function for Gaussian PDFs}
+By taking $f(x) = \ln(x)$ as the function for the monotonic transformation the discriminant function $g_i(x)$ for gaussian PDFs can be calculated:
+\begin{eqnarray*}
+    g_i(x) &=& \ln(P(\omega_i | x)) \\
+        &=& \ln(P(\omega_i) p(x|\omega_i)) \\
+        &=& \ln(P(\omega_i)) + \ln(p(x|\omega_i)) \\
+        &=& -\frac{1}{2} {(x - \mu_i)}^\text{T} \Sigma_i^{-1} (x - \mu_i) + \ln(P(\omega_i)) \\
+        && - \frac{d}{2} \ln(2 \pi) - \frac{1}{2} \ln(\abs{\Sigma_i})
+\end{eqnarray*}
+
+\subsubsection{Decision Surfaces for Gaussian PDFs}
+For $\Sigma_i = \sigma_i^2 I$ and $d = 2$ the discriminant functions are given by quadratic equations, thus the decision functions are ellipsoids, parabolas, quadrics, hyperbolas or lines.
+
+For $\Sigma_i = \Sigma = \sigma^2 I$ the discriminant functions are linear functions, and the decision surface is thus a straight line.
+
+\subsection{Minimum Distance Classifiers}
+For $\Sigma_i = \Sigma$ the decision test is equivalent to minimizing the Mahalanobis distance of the data point to the cluster centres:
+\begin{equation*}
+    d(x, \mu_i) = \sqrt{{(x - \mu_i)}^\text{T} \sigma^{-1} (x-\mu_i)}
+\end{equation*}
+For $\Sigma_i = \Sigma = \sigma^2 I$ the Mahalanobis distance can be replace by the euclidean distance, as $\sigma$ is just a constant scale for all classes.
+
+\subsection{Bayes Classification for Unknown Densities}
+\subsubsection{Maximum Likelihood Parameter Estimation}
+Given a set of possible likelihood PDFs the likelihood of the data points given a function can be calculated, this likelihood needs to be maximized.
+
+For a given set of parameters $\theta_i$ (for a gaussian $\theta$ stands for $\mu$ and $\sigma^2$; $i$ is the class). The likelihood of a single data point is written as $p(x | \omega_i; \theta_i)$.
+Assuming statistical independence between the different samples we get:
+\begin{equation*}
+    p(X; \theta) = p(x_1, x_2, \ldots, x_N; \theta) = \prod_{k=1}^N p(x_k; \theta)
+\end{equation*}
+
+For the maximum likelihood estimation a $\theta^* = \argmax_\theta(p(X; \theta))$ must be found.
+A necessary condition for this maximum is $\frac{\partial p(X; \theta)}{\partial \theta} = 0$.
+
+Instead of $p(X; \theta)$ it is also possible to maxmimize $\ln(p(X; \theta))$, this simplifies the maximization, this is called Log-Likelihood maximization.
+
+\subsubsection{Nonparametric Estimation}
+\paragraph{Histograms}
+The simplest approach is to calculate a histogram of the data. For this the interval $A$ covering the data set is split into intervals (called bins) of length $b > 0$. It is then counted for all $N$ samples how many points are in each bin, the number of points in a bin is given by $k_N$.
+
+The value of the PDF in the bin is assumed to be constant and is given by:
+\begin{equation*}
+    \hat{p}(x) = \frac{k_n}{b N}
+\end{equation*}
+For $N \to \infty$ and $b \to 0$ the estimated PDF converges to the true PDF.
+
+\paragraph{Parzen Window Approach}
+For a given Parzen Window Function $\phi$ the PDF can be estimated by:
+\begin{equation*}
+    \hat{p}(x) = \frac{1}{b^d} \left( \frac{1}{N} \sum_{i=1}^N \phi\left(\frac{x_i - x}{b}\right) \right)
+\end{equation*}
+A possible choice for $\phi(x)$ is the rect-function:
+\begin{equation*}
+    \phi(x) =
+        \begin{cases}
+            1 & \text{if } \abs{x_j} \leq \frac{1}{2};\ \forall j \in \{1, \ldots, d\} \\
+            0 & \text{otherwise}
+        \end{cases}
+\end{equation*}
+Instead of taking distcontinuous functions different kernel functions can be chosen, as long as $\phi(x) \geq 0\ \forall x$ and $\int_{\mathbb{R}^d} \phi(x) \dx = 1$. A typical example is the Gaussian density function with $\mu = 0$ and $\Sigma^2 = I$.
+
+\paragraph{Nearest Neighbor Density Estimation}
+Instead of counting the data points in a fixed neighbourhood, the volume $V(x)$ required to "capture" a fixed number of data points is calculated. The PDF is then given by:
+\begin{equation*}
+    \hat{p}(x) = \frac{k}{N V(x)}
+\end{equation*}
+
+From this idea results the $k$-Nearest Neighbour Classifier: For a feature vector $x$ the $k$ nearest neighbours ($k$ is usually odd) are chosen. $x$ is assigned to the class with the largest number of points in the neighbourhood. $k$-NN is not a Bayes classifier and not optimal, but the error is bounded by $E_\text{$k$-NN} \leq 2 E_\text{Bayes}$.
