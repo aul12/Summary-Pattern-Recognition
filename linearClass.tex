@@ -1,1 +1,73 @@
 \chapter{Linear Classifiers}
+In this chapter we focus on 2-class classification problems.
+In many cases the data is separable by a hyperplane in the feature space. 
+In this case the discriminant function is:
+\begin{equation*}
+    g(x) = w^\text{T} x + w_0
+\end{equation*}
+$w \in \mathbb{R}^d$ is called the weight vector and $w_0 \in \mathbb{R}$ the threshold.
+The weight vector is orthogonal to the hyperplane separating the feature space.
+
+The distance of a point $p \in \mathbb{R}^d$ to the hyperplane is given by:
+\begin{equation*}
+    d(p) = \frac{\abs{g(p)}}{\norm{w}_2}
+\end{equation*}
+
+\section{Perceptron}
+The perceptron is a single neuron with adaptable weights $w$ and threshold $\theta$ (called $w_0$ in the equation above). The class is given by $w^\text{T} x \geq \theta$.
+
+\subsection{Perceptron Learning Algorithm}
+We consider a two class problem with classes $\omega_1$ and $\omega_{-1}$, furthermore the classes are linearly separable. We define an extended weight vector $w^* = {(w_0, w_1, \ldots, w_d)}^\text{T} \in \mathbb{R}^{d+1}$ and extended input vector $x^* = {(1, x_1, \ldots, x_d)}^\text{T} \in \mathbb{R}^{d+1}$. This means there exist a $w^*$ with:
+\begin{eqnarray*}
+    w^{*\text{T}} x^* &>& 0\ \forall x \in \omega_1 \\
+    w^{*\text{T}} x^* &<& 0\ \forall x \in \omega_{-1} \\
+\end{eqnarray*}
+The goal is to compute this vector. The perceptron learning algorithm:
+\begin{algorithmic}
+    \State choose an initial $w$
+    \State set $\alpha > 0$
+    \State $L \gets N$
+    \While{$L > 0$}
+        $L \gets 0$
+        \For{$i=1$ to $N$}
+            \If{$x_i \in \omega_1 \land w_\text{T} x_i < 0$}
+                \State $w \gets w + \alpha x_i$
+                \State $L \gets L + 1$
+            \ElsIf{$x_i \in \omega_{-1} \land w_\text{T} x_i > 0$}
+                \State $w \gets w - \alpha x_i$
+                \State $L \gets L + 1$
+            \EndIf
+        \EndFor
+    \EndWhile
+\end{algorithmic}
+
+The perceptron learning algorithm in Neural Network Formulation ($T_i \in \{-1, 1\}$ is the label of a class):
+\begin{algorithmic}
+    \State choose an initial $w$
+    \State set $\alpha > 0$
+    \State $L \gets N$
+    \While{$L > 0$}
+        $L \gets 0$
+        \For{$i=1$ to $N$}
+            \State $\Delta \gets T_i - \sign(w^\text{T} x_i)$
+            \If{$\Delta \neq 0$}
+                \State $w \gets w + \alpha \Delta x_i$
+                \State $L \gets L + 1$
+            \EndIf
+        \EndFor
+    \EndWhile
+\end{algorithmic}
+
+If the data is linearly separable the perceptron learning algorithm finds a solution (not the best) after a finite number of learning steps.
+
+\todo[inline]{Proof?}
+
+\section{Support Vector Machines}
+The aim is to find a hyperplane separating the classes with maximal distance to both classes. 
+
+Define $\min_i T_i (w^\text{T} x_i + w_0) = \delta$, to separate the classes $\delta > 0$. 
+Rescaling by $\delta$ yields $w = \frac{1}{\delta} w$ and $w_0 = \frac{1}{\delta} w_0$.
+To guarantee a maximum distance from both support vectors there should be a $x_i$ with $T_i = 1$ and $x_j$ with $T_j = -1$ which fullfill:
+\begin{equation*}
+    w^\text{T} x_i + w_0 = 1 \text{ and } w^\text{T} x_j + w_0 = -1
+\end{equation*}
