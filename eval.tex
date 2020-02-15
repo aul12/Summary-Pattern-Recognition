@@ -1,1 +1,6 @@
 \chapter{Evaluation of Classifiers}
+\section{Hold-Out-method}
+The data set is splitted into a training set and a test set. The classifier is trained on the test set and tested on the test set. Problem: Not possible for small data sets.
+
+\section{Cross-Validation}
+Select a $k$ with $2 \leq k \leq N$. $X$ is splitted into $k$ disjoint subsets of equal size. $k$ classifiers are trained, for the $i$th classifier the subset $i$ is not used for training but for evaluation.

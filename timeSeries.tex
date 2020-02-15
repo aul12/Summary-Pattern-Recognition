@@ -1,1 +1,20 @@
 \chapter{Classification of Time Series}
+\section{Markov Chain Model}
+Given a sequence of states $\Omega_i = {\left(\omega_{i_t}\right)}_{t=1}^T$, then for all $k>1$:
+\begin{equation*}
+    P(\omega_{i_t} | \omega_{i_{t-1}}, \ldots, \omega_{i_1}) = P(\omega_{i_t} | \omega_{i_{t-1}})
+\end{equation*}
+This is called a first order Markov Model, it follows:
+\begin{equation*}
+    P(\Omega_i) = P(\omega_{i_1}) \prod_{t=2}^T P(w_{i_t} | w_{i_{t-1}})
+\end{equation*}
+
+Given a pattern the likelihood of a state can thus be calculated:
+\begin{equation*}
+    P(X|\Omega_i)P(\Omega_i) = P(\omega_{i_1})P(x_1|w_{i_1}) \prod_{t=2}^T P(\omega_{i_t} | \omega_{i_{t-1}})P(x_t|w_{i_t})
+\end{equation*}
+The state can be calculated using a maximum likelihood approach, for this $TM^T$ multiplications are needed. Faster: Viterbi Algorithm using Trellis.
+
+\section{Hidden Markov Model}
+Assumption: the state to which an observation belongs to can be observed. This is not always possible.
+\todo[inline]{More}
