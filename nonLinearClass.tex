@@ -1,1 +1,90 @@
 \chapter{Nonlinear Classifiers}
+\section{Multilayer Neural Networks}
+There are functions (for example the XOR function) which can not be represented by a single perceptron, thus multilayer perceptrons are needed.
+
+Instead of te Heaviside function differentiable non linear functions such as the sigmoidal function are used:
+\begin{equation*}
+    f(x) = \frac{1}{1 + \exp(-ax)}
+\end{equation*}
+Optimization is done via (iterative) gradient descent using the backpropagation method.
+
+For classification tasks the output is interpreted as a discrete PDF. For this a softmax transformation is applied (in this case assuming $\hat{v}_k \geq 0\ \forall k \in \{1, \ldots, N\}$):
+\begin{equation*}
+    \hat{y}_k = \frac{\hat{v}_k}{\sum_j \hat{v}_j}
+\end{equation*}
+The loss can then be calculated as the cross entropy between the target PDF and the output ($k_L$ is the number of classes):
+\begin{equation*}
+    J(w) = \sum_{k=1}^{k_L} y_k \ln\left(\frac{\hat{y}_k}{y_k}\right)
+\end{equation*}
+
+\section{Generalized Linear Classifiers}
+The general idea is to first apply a transform to make the data linearly separable. In the next step the data then can be discriminated using a linear classifier.
+
+For this we define $k$ functions $f_1(x), \ldots, f_k(x)$ with $f_i: \mathbb{R}^l \to \mathbb{R}\ \forall i \in \{1, \ldots, k\}$. Combining the functions $y(x) = F(x) = \T{(f_1(x), \ldots, f_k(x))}$ defines the transformation from $\mathbb{R}^l \to \mathbb{R}^k$.
+
+The task is to find a $k$ and a set of functions $f_i$ so that the problem becomes linearly separable.
+
+\subsection{Polynomial Classifiers}
+This is a generalized linear classifier with the functions being polynoms, for $x = \T{(x_1, x_2)}$:
+\begin{equation*}
+    F(x) = \T{(x_1, x_2, x_1 x_2, x_1^2, x_2^2)}
+\end{equation*}
+
+\subsection{Radial Basis Function Networks}
+Radial basis function networks are generalized linear classifiers with $f_i$ of the form:
+\begin{equation*}
+    f_i(x) = f\left(\norm{x-c_i}\right)
+\end{equation*}
+
+Often gauss-like functions are being used:
+\begin{equation*}
+    f_i(x) = \exp\left(-\frac{1}{2 \sigma_i^2} \norm{x-c_i}^2\right)
+\end{equation*}
+
+\subsection{Nonlinear Support Vector Machines}
+If there is a set of functions $f_i$ which make the problem linear separable a SVM can be used in the transformed space.
+
+\subsection{Mercer Kernels}
+Instead of calculating the transformation explicitly it is also possible to replace the inner product by a kernel function $k: \mathbb{R}^l \times \mathbb{R}^l \to \mathbb{R}$:
+\begin{equation*}
+    \langle F(x), F(z) \rangle = k(x, z)
+\end{equation*}
+
+\section{Decision Trees}
+The feature space is split into regions, typically these regions are axis parallel rectangles.
+The tree is then formed of questions such as $x_i < \alpha$ and splitted as long as nodes in the tree are impure, that means there are items of multiple classes belonging to this node.
+
+A measure for the impurity is the entropy of the data points:
+\begin{equation*}
+    I(t) = - \sum_{i=1}^M P(\omega_i | t) \log_2 \left(P(\omega_i | t)\right)
+\end{equation*}
+
+Algorithm:
+\begin{algorithmic}
+    \State Start with the root node $t$
+    \For{each new node $t$}
+        \If{The node consists of one class}
+            \State The node is a leaf node
+        \Else
+            \For{every feature $x_k\ k \in \{1, \ldots, l\}$}
+                \For{every value $\alpha_{k_n}\ n \in \{1, \ldots N_{t_k}\}$}
+                    \State Generate sets $X_{tY}$ and $X_{tN}$
+                    \State Compute the impurity gain $\Delta I(t)$
+                \EndFor 
+            \EndFor
+            \State Choose $x_k$ and associated $\alpha_{k_{n0}}$ leading to the maximum gain of impurity
+            \todo[inline]{Nicht minimal, da I(t)=0 ja ideal?}
+            \State Generate the two new descendant nodes $t_Y$ and $t_N$
+        \EndIf
+    \EndFor
+\end{algorithmic}
+
+\section{Classifier Combination}
+The idea is to use more than one classifier to improve the overall performance.
+The challenge is to combine the output of the classifiers.
+
+\subsection{Majority Voting}
+Assign the class label with the maximum number of votes, based on a hard decision.
+
+\subsection{Soft-Type Aggregation Rules}
+If every classifier yields its own PDF they can be combined. Possible options are a product or the summation of the PDFs, the final decision is based on the $\argmax$.
