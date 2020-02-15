@@ -1,1 +1,132 @@
 \chapter{Feature Generation}
+\section{Principal Component Transformation}
+Approximate a data point $x_j$ with a datapoint $\hat{x}_j$ as best as possible (minimal means square error).
+\subsection{Algorithm}
+\begin{enumerate}
+    \item The mean of the data needs to be $0$, for this transform every data point:
+        \begin{equation*}
+            x_i = x_i - E[x]
+        \end{equation*}
+    \item Compute the correlation matrix R
+        \begin{equation*}
+            C=R = \frac{1}{n} \T{X}X
+        \end{equation*}
+    \item Compute the eigenvalues $\lambda_1 \geq \lambda_2 \geq \ldots \geq \lambda_l \geq 0$ and the corresponsding eigenvectors $a_1, a_2, \ldots, a_l$. The eigenvectors form an orthonormal basis of $\mathbb{R}^l$
+    \item For a given $m \leq l$ the transformation matrix is given by:
+        \begin{equation*}
+            A = (a_1, a_2, \ldots, a_m)
+        \end{equation*}
+\end{enumerate}
+
+\section{Singular Value Decomposition}
+For a matrix $X \in \mathbb{R}^{l \times n}$ the rank $r \leq \min(l, n)$, it holds:
+\begin{equation*}
+    \exists U \in \mathbb{R}^{l \times l}, V \in \mathbb{R}^{n \times n}, \Lambda \in \mathbb{R}^{r \times r}:\ 
+        X = U \begin{pmatrix} \Lambda^{\frac{1}{2}} & 0 \\ 0 & 0 \end{pmatrix} \T{V}
+\end{equation*}
+with: $\Lambda^{\frac{1}{2}} = \diag(\lambda_1, \ldots, \lambda_r), \lambda$ are the eigenvalues of $X\T{X}$
+
+Both $U$ and $V$ are orthogonal, thus $\T{U} = U^{-1}$ and $\T{V} = V^{-1}$, as a result $X$ can be transformed to diagonal form:
+\begin{equation*}
+    Y = \T{U} X V
+\end{equation*}
+\todo[inline]{Proof?}
+
+\subsection{Low Rank Approximation}
+For $r = \rank(X)$:
+\begin{equation*}
+    X = U_r \Lambda^\frac{1}{2} \T{V}_r = \sum_{i=1}^r \sqrt{\lambda_i} u_i \T{v_i}
+\end{equation*}
+For $k < r$ the terms approximate $X$:
+\begin{equation*}
+    X \approx \hat{X} = \sum_{i=1}^k \sqrt{\lambda_i} u_i \T{v_i}
+\end{equation*}
+$\hat{X}$ ist the best rank-$k$ approximation to $X$ in the sense of $\norm{\cdot}_\text{F}^2$.
+
+\section{Nonnegative Matrix Factorization}
+The goal is to find to matrices $W \in \mathbb{R}^{l \times r}$ and $H \in \mathbb{R}^{r \times n}$ with:
+\begin{equation*}
+    X \approx W H
+\end{equation*}
+with $W_{ij} \geq 0, H_{ij} \geq 0\ \forall i,j$.
+
+No analytical solution is known, so numerical optimization must be applied, for example by minimizing $\norm{X-WH}^2_\text{F}$.
+
+\section{Independent Component Analysis}
+PCT only considers the first moment (covariance) of a distribution. ICA tries to remove all statistical dependence. A matrix $W$ with:
+\begin{equation*}
+    y = Wx
+\end{equation*}
+must be found so that the vectors of $y$ are statistically independent.
+
+In practise statiscal independence up to the order four is sufficient. For this first calculate the PCA (or SVD), this yields a matrix $A$ with:
+\begin{equation*}
+    \hat{y} = \T{A} x
+\end{equation*}
+Compute another matrix $\hat{A}$ so that $\kappa_4$ is zero. Then the data is transformed:
+\begin{equation*}
+    y = \T{\hat{A}} \hat{y}
+\end{equation*}
+For this the fourth order auto cumulants are maximized:
+\begin{equation*}
+    \sum_{i=1}^n \kappa_4(y_i)^2
+\end{equation*}
+
+\section{Kernel PCA}
+Instead of directly applying the PCA the data is first transformed using a non-linear function $F(x)$, the PCA is then calculated in the transformed space. Similar to the kernel SVM the transformation and the inner product can be combined into a kernel function.
+
+\section{Auto Encoder}
+The goal is for a NN to "learn" a lower dimensional representation of the data. For this an architecture with a bottleneck feature is chosen. The neural network is trained to learn the identity.
+
+\section{Convolutional Neural Networks}
+For data with a spatial relation the feature extraction is done via convolution. The feature extraction and the classification are trained in an end-to-end fashion.
+
+\section{Fourier Transform}
+The data can be transformed using the discrete fourier transform:
+\begin{equation*}
+    y(k) = \frac{1}{\sqrt{N}} \sum_{n=0}^{N-1} x(n) \exp\left( -2 \pi i \frac{kn}{N} \right)
+\end{equation*}
+
+\section{Cosine Transform}
+The discrete cosine transformation is defined by:
+\begin{equation*}
+    y(k) = \alpha(k) \sum_{n=0}^{N-1} x(n) \cos \left(\frac{\pi (2n + 1)k}{2 N} \right)
+\end{equation*}
+with $\alpha(0) = \sqrt{\frac{1}{N}}$ and $\alpha(k) = \sqrt{\frac{2}{N}}$ for $k > 0$.
+
+\section{Sine Transform}
+The discrete sind transformation is defined by:
+\begin{equation*}
+    y(k) = \sqrt{\frac{2}{N+1}} \sum_{n=0}^{N-1} x(n) \sin\left(\frac{\pi (n+1)(k+1)}{N
++1}\right)
+\end{equation*}
+
+\section{Hadamard Transform}
+The Hadamard matrix of order 1 is defined by
+\begin{equation*}
+    H_1 = \frac{1}{\sqrt{2}}
+        \begin{pmatrix}
+            1 & 1 \\
+            1 & -1 \\
+        \end{pmatrix}
+\end{equation*}
+and the matrix of order $n$ as:
+\begin{equation*}
+    H_n = H_1 \times H_{n-1} =
+        \begin{pmatrix}
+            H_{n-1} & H_{n-1} \\
+            H_{n-1} & -H_{n-1}
+        \end{pmatrix}
+\end{equation*}
+It can be shown, that: $H_n^{-1} = \T{H_n} = H_n$.
+
+\section{Short Time Processing of Signals}
+Short windows of the signal are classified independent of each other. For this a window function must be chosen, for example a simple rect or a Hamming Window:
+\begin{equation*}
+    w(n) = 
+        \begin{cases}
+            0.54-0.46 \cos\left( \frac{2 \pi n}{N-1}\right) & 0 \leq n \leq N-1 \\
+            0 & \text{otherwise}
+        \end{cases}
+\end{equation*}
+In each frame a feature can be extracted (for example via DFT).
