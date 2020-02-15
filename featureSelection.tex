@@ -1,1 +1,69 @@
 \chapter{Feature Selection}
+For good classification performance a larger number of features is necessary. On the other hand a large number of features results in a complex model, thus it is of great importance to select the right features for the task.
+
+\section{Peaking Phenomenon}
+The performance of the classifier depends on the number of features and the number of training samples, for a small error there needs to be many features and training samples.
+
+\section{Preprocessing}
+\subsection{Outlier Removal}
+Data points which are two far away from the mean of the data (for normal distributions $2 \sigma$ covers 95\% of the data, $3\sigma$ covers 99\%) can be removed from the data set.
+
+\subsection{Missing Data}
+Missing values are completed, for instance by means or medians of the $k$ nearest neighbours.
+
+\subsection{Data Normalization}
+For features with different ranges the feature with larger numerical values can have a larger influence in the cost function. To avoid this the features can be normalized to have $\mu=0$ and $\sigma=1$.
+The statistical properties can be calculated from the data set:
+\begin{eqnarray*}
+    \mu_k &=& \sum_{i=1}^N x_{ki} \\
+    \sigma_k^2 &=& \frac{1}{N-1} \sum_{i=1}^N {(x_{ki} - \mu_k)}^2
+\end{eqnarray*}
+Every feature of a data point can then be transformed:
+\begin{equation*}
+    \tilde{x}_{ki} = \frac{x_{ki} - \mu_{k}}{\sigma_k}
+\end{equation*}
+
+Normalization to $[0,1]$ can also be done. For this define $\min_k = \min_{i=1}^N x_{ki}$ and $\max_k = \max_{i=1}^N x_{ki}$ and transform a feature of a data point:
+\begin{equation*}
+    \tilde{x}_{ki} = \frac{x_{ki} - \min_k}{\max_k - \min_k}
+\end{equation*}
+
+\section{Statistical Testing of Features}
+Test the discriminatory capabilitites of each feature, for this investigate whether the values change significantly between class $\omega_i$ and $\omega_j$ ($i \neq j$).
+
+\section{Class Separation Measures}
+The within class scatter matrix (weighted covariance matrix) is calculated as:
+\begin{equation*}
+    S_w = \sum_{i=1}^M P_i \Sigma_i
+\end{equation*}
+
+The between class scatter matrix is:
+\begin{equation*}
+    S_b = \sum_{i=1}^M P_i (\mu_i - \mu_0) \T{(\mu_i - \mu_0)}
+\end{equation*}
+
+The total scatter matrix is: $S_m = S_b + S_w$.
+
+A criterion for separability is:
+\begin{equation*}
+    J = \frac{\trace(S_m)}{\trace(S_w)}
+\end{equation*}
+
+For a single feature and two class problem this reduces to the Fisher's discriminant ratio:
+\begin{equation*}
+    \text{FDR} = \frac{{(\mu_1 - \mu_2)}^2}{\sigma_1^2 + \sigma_2^2 }
+\end{equation*}
+
+\section{Feature Selection}
+Challenge: find a subset of $l$ of the $m$ features with the best discriminatory capabilities.
+A complete search is often not possible due to the exponential runtime. 
+
+\subsection{Scalar Feature Selection}
+Compute for all scalar feature values the discriminatory capability, and sort them by this capability. Select the first $l$ features. Problem: Features are assumed to be independent.
+
+\subsection{Sequential Selection}
+\subsubsection{Sequential Backward Selection}
+From the $m$ features remove one feature and calculate the capabilities for all $m$ possible remaining vectors. Take the vector with the best capabilities. Take the $m-1$ dimensional vector and repeat.
+
+\subsubsection{Sequential Forward Selection}
+Same as backward selection, but starting with one feature and then adding more.
