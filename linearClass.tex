@@ -125,3 +125,73 @@ In matrix vector notation:
 \begin{equation*}
     X^\text{T} X w = X^\text{T} T
 \end{equation*}
+$X^\text{T}X$ is the correlation matrix of the (extended) data set.
+If the inverse of the correlation matrix exists $w$ can be calculated:
+\begin{equation*}
+    w =  T
+\end{equation*}
+The matrix $X^+ = {(X^\text{T} X)}^{-1} X^\text{T}$ is the pseudo inverse of $X$.
+
+If $X^\text{T}X$ is singular a pseudo inverse can be calculated:
+\begin{equation*}
+    X^+ = \lim_{\alpha \to \infty} {(X^\text{T} X + \alpha I)}^{-1} X^\text{T}
+\end{equation*}
+
+\section{Logistic Discrimination}
+It is assumed that the log likelihood function is linear:
+\begin{equation*}
+    g_i(x) = \ln \left( \frac{P(\omega_i | x)}{P(\omega_M | x)} \right) = w^\text{T}_i x + w_{i0}
+\end{equation*}
+additionally the absolute probability must hold:
+\begin{equation*}
+    \sum_{k=1}^M P(\omega_k | x) = 1
+\end{equation*}
+The parameters $w$ and $w_0$ can then be calculated using the maximum likelihood approach.
+
+\section{Linear Discriminant Analysis}
+Aim: find a $w$ so that the data is easy to discriminate if projected onto $w$. For this the squared difference between the projected cluster centres is maximized. The cluster centres are given by:
+\begin{eqnarray*}
+    m_{-1} &=& \frac{1}{N_{-1}} \sum_{x_i \in \omega_{-1}} w^\text{T} x_i \\
+    m_{1} &=& \frac{1}{N_{1}} \sum_{x_i \in \omega_{1}} w^\text{T} x_i
+\end{eqnarray*}
+The (squared) difference between the classes is given by:
+\begin{equation*}
+    \tilde{J}(w) = {(m_{-1} - m_1)}^2
+\end{equation*}
+This distance can be computed directly (with $c_{-1}$ and $c_1$ being the cluster centres):
+\begin{equation*}
+    \tilde{J}(w) = {(\T{w} (c_{-1} - c_1))}^2
+\end{equation*}
+
+The data is normalized with the two total variances $s_{-1}^2$ and $s_1^2$:
+\begin{eqnarray*}
+    s_{-1}^2 &=& \sum_{x_i \in \omega_{-1}} {(\T{w}x_i - m_{-1})}^2 \\
+    s_{1}^2 &=& \sum_{x_i \in \omega_{1}} {(\T{w}x_i - m_{1})}^2 \\
+\end{eqnarray*}
+
+The function to optimize is then given by:
+\begin{equation*}
+    J(w) = \frac{{(m_{-1} - m_1)}^2}{s_{-1}^2 + s_1^2}
+\end{equation*}
+$J(w)$ can be reformulated by defining the between scatter matrix $S_B$ and the within scatter matrix $S_W$:
+\begin{equation*}
+    J(w) = \frac{\T{w} S_B w}{\T{w} S_W w}
+\end{equation*}
+To find the maximum it must hold that $\frac{\partial J(w)}{\partial w} = 0$. Thus:
+\begin{equation*}
+    (\T{w} S_W w) S_B w = (\T{w} S_B w) S_W w
+\end{equation*}
+Both $(\T{w} S_W w)$ and $(\T{w} S_B w)$ are positive real numbers.
+Thus we can define a $\lambda \in \mathbb{R}^+$ as:
+\begin{equation*}
+    \lambda = \frac{\T{w} S_B w}{\T{w} S_W w}
+\end{equation*}
+As a result we get a generalized eigenvalue problem:
+\begin{equation*}
+    S_B w = \lambda S_W w
+\end{equation*}
+If $S_W^{-1}$ exist we can reformulate the problem as a regular eigenvalue problem:
+\begin{equation*}
+    S_W^{-1} S_B w = \lambda w
+\end{equation*}
+It follows that $w$ is in the direction $c_{-1} - c_1$. The threshold is derived using Bayes Decision Rule with the assumption of one gaussian distribution per class.
