@@ -88,6 +88,12 @@ considering one constraint per data point (minimum margin and correct classifica
 \end{equation*}
 This optimization can be solved using Langrange Optimization with the Karush-Kuhn-Tucker conditions.
 
+The hyperplane is then given by:
+\begin{eqnarray*}
+    w &=& \sum_{i=1}^N T_i \alpha_i x_i \\
+    w_0 &=& T_i - \T{w}x_i \text{ with } \alpha_i \neq 0\ (x_i \text{ is a support vector})
+\end{eqnarray*}
+
 \subsection{Soft separation}
 If the data set is not linearly separable so-called slack variables need to be added to the constraints:
 \begin{equation*}
